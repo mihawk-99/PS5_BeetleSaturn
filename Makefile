@@ -81,6 +81,8 @@ ifeq ($(platform), ps5)
    LDFLAGS += $(PTHREAD_FLAGS)
    FLAGS += $(PTHREAD_FLAGS)
    LTO = 0
+   # zstd's trace hooks are weak imports nothing on the console defines.
+   FLAGS += -DZSTD_TRACE=0
 
 # Unix
 else ifneq (,$(findstring unix,$(platform)))
