@@ -71,8 +71,19 @@ ifeq ($(arch),loongarch64)
    CXXFLAGS += -D__loongarch64__
 endif
 
+# PS5 (a homebrew title's libretro core): the console's libraries resolve at
+# load time, so no --no-undefined; no LTO.
+ifeq ($(platform), ps5)
+   FLAGS += -DHAVE_MMAP
+   TARGET := $(TARGET_NAME)_libretro.so
+   fpic := -fPIC
+   SHARED := -shared -Wl,--version-script=link.T
+   LDFLAGS += $(PTHREAD_FLAGS)
+   FLAGS += $(PTHREAD_FLAGS)
+   LTO = 0
+
 # Unix
-ifneq (,$(findstring unix,$(platform)))
+else ifneq (,$(findstring unix,$(platform)))
    # local VFS may mmap FREQUENT_ACCESS files (cdstream/CHD zero-copy)
    FLAGS += -DHAVE_MMAP
    TARGET := $(TARGET_NAME)_libretro.so
